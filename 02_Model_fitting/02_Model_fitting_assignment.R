@@ -15,36 +15,49 @@ library(icesSD)
 library(icesSAG)
 ?icesVocab
 
-# look up the vocabulary database for haddock
+# look up the vocabulary database for herring
 stockcodes <- getCodeList("ICES_StockCode")
 head(stockcodes)
 
 # helper function
-findCode("stock", "haddock", full = TRUE, regex = TRUE)
+findCode("stock", "herring", full = TRUE, regex = TRUE)
 
-getCodeDetail("ICES_StockCode", "had.27.46a20")
+stock_code <- "her.27.3a47d"
+
+getCodeDetail("ICES_StockCode", stock_code)
 
 # look up the stock database for haddock
-had_info <- getSD(stock = "had.27.46a20", year = 2021)
-print(t(had_info), quote = FALSE)
+her_info <- getSD(stock = stock_code, year = 2018)
+print(t(her_info), quote = FALSE)
 
 # stock assessment results for haddock
-had_key <- icesSAG::findAssessmentKey("had.27.46a20", year = 2021)
-browseURL(paste0("https://standardgraphs.ices.dk/ViewCharts.aspx?key=", had_key))
+her_key <- icesSAG::findAssessmentKey(stock_code, year = 2018)
 
-had_summary <- getSummaryTable(had_key)[[1]]
-had_summary
+# look at the SAG DB web page for this assessment
+browseURL(paste0("https://standardgraphs.ices.dk/ViewCharts.aspx?key=", her_key))
+
+# look at the adviceXplorer app for this assessment
+browseURL(paste0("https://ices-taf.shinyapps.io/advicexplorer/?assessmentkey=", her_key))
+
+her_summary <- getSummaryTable(her_key)[[1]]
+her_summary
 
 # extract SR data
-had_sr <- had_summary[c("Year", "SSB", "recruitment")]
-had_sr
+her_sr <- her_summary[c("Year", "SSB", "recruitment")]
 
-names(had_sr) <- c("yc", "ssb", "rec")
-had_sr$ssb <- had_sr$ssb / 1000
-had_sr$rec <- had_sr$rec / 1000
+# match years with data in excersise
+her_sr <- her_sr[her_sr$Year %in% 1948:2017,]
+her_sr
 
-head(had_sr)
 
+names(her_sr) <- c("yc", "ssb", "rec")
+her_sr$ssb <- her_sr$ssb / 1000
+her_sr$rec <- her_sr$rec / 1000
+
+
+head(her_sr)
+
+tail(her_sr)
 
 
 
